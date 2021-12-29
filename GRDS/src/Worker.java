@@ -8,8 +8,10 @@ public class Worker implements Serializable {
     private int udpPort;
     private int tcpPort;
 
-    public Worker(Socket socket){
-        s = socket;
+    public Worker(String address, int udpPort, int tcpPort) {
+        this.address = address;
+        this.udpPort = udpPort;
+        this.tcpPort = tcpPort;
     }
 
 
