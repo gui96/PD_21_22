@@ -61,8 +61,13 @@ public class Principal /*implements Runnable*/{
 
         listeningPort = Integer.parseInt(args[0]);
 
-        tcpthread = new TcpServer();
+        tcpthread = new TcpServer();/*inicia socket TCP para cliente, atende novos clientes, por si lança outra thread para atender cada um*/
+        /*lançar thread periodica(envia sinal do seu porto ao GRDS, e recebe lista de servidores atualizada)*/
 
+        while(true){
+
+
+        }
         try (DatagramSocket socket = new DatagramSocket()){
             s = new ServerSocket(0);
 //                toClient = s.accept();

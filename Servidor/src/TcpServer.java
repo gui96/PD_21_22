@@ -12,7 +12,8 @@ public class TcpServer implements Runnable{
         try {
             //ServerSocket serverSocket = new ServerSocket(0);
             serverSocket = new ServerSocket(0);
-            /*lançar thread periodica*/
+
+
 
             /**/
             port = serverSocket.getLocalPort();
