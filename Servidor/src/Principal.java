@@ -45,12 +45,14 @@ public class Principal /*implements Runnable*/{
 //
 //    }
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws InterruptedException {
         ServerSocket s = null;
         //Socket toClient;
         Socket toClient;
         TcpServer tcpthread;
-        int listeningPort;
+        UdpServer udpthread;
+        int portToGRDS;
+        int myTcpPort;
         int nCreatedThreads = 0;
         List<Integer> workersPort = new ArrayList<>();
 
@@ -59,15 +61,18 @@ public class Principal /*implements Runnable*/{
             return;
         }
 
-        listeningPort = Integer.parseInt(args[0]);
+        portToGRDS = Integer.parseInt(args[0]);
 
         tcpthread = new TcpServer();/*inicia socket TCP para cliente, atende novos clientes, por si lança outra thread para atender cada um*/
-        /*lançar thread periodica(envia sinal do seu porto ao GRDS, e recebe lista de servidores atualizada)*/
+        Thread.sleep(5000);
+        myTcpPort = tcpthread.getPort();
+        udpthread = new UdpServer(portToGRDS, myTcpPort);/*lançar thread periodica(envia sinal do seu porto ao GRDS, e recebe lista de servidores atualizada)*/
 
-        while(true){
+        /*while(true){
 
 
-        }
+        }*/
+        /*
         try (DatagramSocket socket = new DatagramSocket()){
             s = new ServerSocket(0);
 //                toClient = s.accept();
@@ -103,7 +108,7 @@ public class Principal /*implements Runnable*/{
                 }
             }
         }
-
+*/
         /*INICIA CICLO DE COMUNICAÇÃO COM CLIENTE, QUANDO RECEBE LANCA UMA THREAD PARA O CLIENTE
         while(true) {
             try (DatagramSocket socket = new DatagramSocket()) {
@@ -127,6 +132,7 @@ public class Principal /*implements Runnable*/{
                 }
             }
         }*/
+
 
     }
 }

@@ -3,6 +3,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class TcpServer implements Runnable{
+
     private int port;
     private Thread thread;
     private ServerSocket serverSocket;
@@ -12,10 +13,6 @@ public class TcpServer implements Runnable{
         try {
             //ServerSocket serverSocket = new ServerSocket(0);
             serverSocket = new ServerSocket(0);
-
-
-
-            /**/
             port = serverSocket.getLocalPort();
             System.out.println("o tcp está na porto:"+port);
 
@@ -33,6 +30,10 @@ public class TcpServer implements Runnable{
     public TcpServer() {
         thread = new Thread(this);
         thread.start();
+    }
+
+    public int getPort() {
+        return port;
     }
 
     public ServerSocket getServerSocket(){
