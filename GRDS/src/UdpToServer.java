@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class UdpToServer implements Runnable{
@@ -28,13 +29,18 @@ public class UdpToServer implements Runnable{
                 mensagemReceive = (Msg) oss.readObject();
 
 
-                    /*adiciona dados servidor á lista de workers*//*
+                if(mensagemReceive.getOperacao().equals("registoServer")){
+                    /*adiciona dados servidor á lista de workers*/
                     System.out.println("novo servidor:" + packet.getAddress() + ":" + mensagemReceive.getTcpPort() + "\n A enviar lista de servidores ativos...\n Lista enviada com sucesso");
                     if(repetidos(workers,mensagemReceive.getTcpPort(), mensagemReceive.getDate())) {
                         workers.add(new Worker(packet.getAddress().toString(), packet.getPort(), mensagemReceive.getTcpPort()));
-                    }*/
+                    }else{
+                        verificaDateWorkers(workers);
+                    }
+                }else{
 
-                workers.add(new Worker(packet.getAddress().toString(), packet.getPort(), mensagemReceive.getTcpPort()));
+                }
+
 
                 /*envia a lista de workers para o servidor*/
                 ByteArrayOutputStream boas = new ByteArrayOutputStream();
@@ -68,6 +74,18 @@ public class UdpToServer implements Runnable{
             }
         }
         return true;
+    }
+
+    private void verificaDateWorkers(List<Worker> workers){
+        Calendar actual = GregorianCalendar.getInstance();
+
+        for(int i=0; i < workers.size(); i++){
+            if((actual.getTimeInMillis()-workers.get(i).getDate().getTimeInMillis())  > 60000){
+                System.out.println("Servidor removido IP:"+workers.get(i).getAddress()+" PORT:"+workers.get(i).getTcpPort());
+                workers.remove(workers.get(i));
+
+            }
+        }
     }
 
 
