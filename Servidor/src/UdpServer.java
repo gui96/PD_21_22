@@ -50,7 +50,7 @@ public class UdpServer implements Runnable{
 
 
                 /*recebe lista de dos outros servidores como resposta do GRDS*/
-                byte[] buffer = new byte[4096];
+                byte[] buffer = new byte[14096];
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
                 ByteArrayInputStream baos = new ByteArrayInputStream(buffer);
