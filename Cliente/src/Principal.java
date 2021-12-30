@@ -2,73 +2,74 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
-public class Principal {
+public class Principal  {
+
+    /** Comandos
+     * connect
+     * sign in [User]
+     * sign up [User]
+     * get users
+     * search [User]
+     * add user [User]
+     * contacts
+     * del user [User]
+     * chat [Name_chat]
+     * name chat [Name_chat]
+     * del chat
+     * user chat add [User]
+     * user chat del [User]
+     * quit chat
+     * get chats
+     * msg chat [Message]
+     * file chat [File]
+     * hist chat
+     * del msg chat
+     */
 
     public static void main(String[]args){
-        String nome = "";
-        Integer serverPort = -1;
 
         Scanner sc = new Scanner(System.in);
-        int portGRDS = -1;
-        InetAddress adrr = null;
-
-        if(args.length != 2){
-            System.out.println("\"Sintaxe: <IP GRDS> <Porto UDP GRDS> \"");
-            return;
-        }
-
-        try {
-            adrr = InetAddress.getByName(args[0]);
-            portGRDS = Integer.parseInt(args[1]);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-
-        try (DatagramSocket socket = new DatagramSocket()){
-            /*------------------Envia mensagem ao GRDS ---------------*/
-            socket.setSoTimeout(10000);
-            ByteArrayOutputStream boas = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(boas);
-
-            oos.writeUnshared("Entrou novo cliente");
-
-            byte[] buffer = boas.toByteArray();
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length,adrr,portGRDS);
-            socket.send(packet);
-            /*-----------------------------------------------------*/
-            /*----- Recebe porto de escuta do servidor-------------*/
-            byte[] buf = new byte[4000];
-            DatagramPacket p = new DatagramPacket(buf, buf.length);
-            socket.receive(p);
-            ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-            ObjectInputStream oin = new ObjectInputStream(bais);
-
-            serverPort = (Integer) oin.readObject();
-            System.out.println("Porto do Servidor para conexão: " + serverPort);
-            /*----------------------------------------------------------------*/
-
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        try (Socket toServer = new Socket(adrr,serverPort)){
-            toServer.setSoTimeout(1000000);
-            while (!nome.equalsIgnoreCase("fim")) {
-                /* Comunicação com o servidor */
-                System.out.print("Escreva aqui >> ");
-                nome = sc.next();
-                //ObjectInputStream in = new ObjectInputStream(toServer.getInputStream());
-                ObjectOutputStream out = new ObjectOutputStream(toServer.getOutputStream());
-                out.writeUnshared(nome);
-                /* ---------------------------------- */
+        System.out.print("Comando: ");
+        String command = sc.nextLine();
+        Cliente cliente = new Cliente();
+        while(!command.equalsIgnoreCase("exit")) {
+            if (validateCommand(command)) {
+                cliente.toSend(command);
+                System.out.print("\nComando: ");
+                command = sc.nextLine();
+            } else {
+                System.out.println("\nComando invalido");
+                System.out.print("\nComando: ");
+                command = sc.nextLine();
             }
-        }catch (IOException e){
-            System.out.println("Exception: " + e);
         }
+    }
 
+    public static boolean validateCommand(String command) {
+        if(command.equalsIgnoreCase("connect") ||
+                command.equalsIgnoreCase("end") ||
+                command.equalsIgnoreCase("exit") ||
+                command.startsWith("sign in") ||
+                command.startsWith("sign up") ||
+                command.startsWith("get users") ||
+                command.startsWith("search") ||
+                command.startsWith("add user") ||
+                command.startsWith("contacts") ||
+                command.startsWith("del user") ||
+                command.startsWith("chat") ||
+                command.startsWith("name chat") ||
+                command.startsWith("del chat") ||
+                command.startsWith("user chat add") ||
+                command.startsWith("user chat del") ||
+                command.startsWith("quit chat") ||
+                command.startsWith("get chats") ||
+                command.startsWith("msg chat") ||
+                command.startsWith("file chat") ||
+                command.startsWith("hist chat") ||
+                command.startsWith("del msg chat")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
