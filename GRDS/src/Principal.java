@@ -9,8 +9,7 @@ public class Principal {
     public static void main(String[] args) throws UnknownHostException, SocketException {
         int tam = 0;
         List<Worker> workers = new ArrayList<>();
-        List<Integer> serverPort = new ArrayList<>();
-        List<Integer> clientPort = new ArrayList<>();
+        UdpToServer udpServerThread;
         int nWorkers = 0;
         int returnValue;
         socket =  new DatagramSocket(6000);
@@ -20,37 +19,17 @@ public class Principal {
             return;
         }
 
-    try {
+        try {
 
-        while(true) {
-            byte[] buffer = new byte[4096];
-            /* Recebe os portosTCP do servidor para entrar em contacto com os severs e porto que te que reenviar ao cliente para fazer a lifação Server-Cliente*/
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-            socket.receive(packet);
-            //socket.setSoTimeout(60000);
-            ByteArrayInputStream baos = new ByteArrayInputStream(buffer);
-            ObjectInputStream oss = new ObjectInputStream(baos);
-            Integer port = (Integer) oss.readObject();
-            /*adiciona dados servidor á lista de workers*/
-            System.out.println("novo servidor:" + packet.getAddress() + ":" + port + "\n A enviar lista de servidores ativos...\n Lista enviada com sucesso");
-            workers.add(new Worker(packet.getAddress().toString(), packet.getPort(), port));
+            udpServerThread = new UdpToServer(socket,workers);
 
-            /*envia a lista de workers para o servidor*/
-            ByteArrayOutputStream boas = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(boas);
-            /*escreve o porto*/
-            oos.writeUnshared(workers);
-            oos.flush();
-            /*envia packet para o GRDS, pelo ip e porto fornecidos previamente pelos argumentos de entrada*/
-            byte[] buf = boas.toByteArray();
-            DatagramPacket p = new DatagramPacket(buf, buf.length,
-                    packet.getAddress(), packet.getPort());
-            socket.send(p);
-
+            while (true){
+                System.out.println("Main a falar");
+                Thread.sleep(15000);
+            }
+        } catch (Exception e) {
+            System.out.print(e);
         }
-    } catch (Exception e) {
-        System.out.print(e);
-    }
 
 
 
@@ -116,6 +95,7 @@ public class Principal {
 */
 
     }
+
 
     private static void enviaWorkers(List<Integer> servers){
 

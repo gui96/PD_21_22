@@ -7,6 +7,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class UdpServer implements Runnable{
@@ -14,6 +15,8 @@ public class UdpServer implements Runnable{
     private int myTcpPort;
     private List<Worker> workers;
     private Thread thread;
+    private Msg mensagemSend;
+    private Msg mensagemReceive;
 
 
     @Override
@@ -29,9 +32,16 @@ public class UdpServer implements Runnable{
                 /*Envia o porto tcp(receber clientes) para o GRDS*/
                 ByteArrayOutputStream boas = new ByteArrayOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(boas);
-                /*escreve o porto*/
-                oos.writeUnshared(myTcpPort);
+
+                /*cria objecto mensagem*/
+                mensagemSend = new Msg();
+                mensagemSend.setOperacao("registoServer");
+                mensagemSend.setDate( GregorianCalendar.getInstance());
+                mensagemSend.setTcpPort(myTcpPort);
+                /*escreve objecto*/
+                oos.writeUnshared(mensagemSend);
                 oos.flush();
+
                 /*envia packet para o GRDS, pelo ip e porto fornecidos previamente pelos argumentos de entrada*/
                 byte[] buf = boas.toByteArray();
                 DatagramPacket p = new DatagramPacket(buf, buf.length,
@@ -46,7 +56,10 @@ public class UdpServer implements Runnable{
                 ByteArrayInputStream baos = new ByteArrayInputStream(buffer);
                 ObjectInputStream oss = new ObjectInputStream(baos);
 
-                workers = (ArrayList<Worker>) oss.readObject();
+                mensagemReceive = new Msg();
+                mensagemReceive = (Msg) oss.readObject();
+                workers = mensagemReceive.getWorkers();
+
                 for (int i = 0; i < workers.size(); i++) {
                     System.out.println("Servidores ativos - IP: 127.0.0.1 " + " Porto: " + workers.get(i).getTcpPort());
                 }
@@ -62,6 +75,8 @@ public class UdpServer implements Runnable{
     }
 
     public UdpServer(int portToGRDS, int myTcpPort) {
+        this.mensagemSend = null;
+        this.mensagemReceive = null;
         this.portToGRDS = portToGRDS;
         this.myTcpPort = myTcpPort;
         this.workers = new ArrayList<Worker>();

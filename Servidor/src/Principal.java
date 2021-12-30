@@ -64,7 +64,7 @@ public class Principal /*implements Runnable*/{
         portToGRDS = Integer.parseInt(args[0]);
 
         tcpthread = new TcpServer();/*inicia socket TCP para cliente, atende novos clientes, por si lança outra thread para atender cada um*/
-        Thread.sleep(5000);
+        Thread.sleep(1000);
         myTcpPort = tcpthread.getPort();
         udpthread = new UdpServer(portToGRDS, myTcpPort);/*lançar thread periodica(envia sinal do seu porto ao GRDS, e recebe lista de servidores atualizada)*/
 
